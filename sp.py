@@ -1,30 +1,35 @@
 import string
 import random
-s1 = list(string.ascii_lowercase)
-s2 = list(string.ascii_uppercase)
-s3 = list(string.digits)
-s4 = list(string.punctuation)
-characters_num = input("how many characters for the password :")
-while True:
-    try:
-        characters_num = int(characters_num)
-        if characters_num < 6:
-            characters_num = input("please use 6 number or more  :")
-        else:
-            break
-    except:
-        characters_num = input("you can only use numbers :")
-random.shuffle(s1)
-random.shuffle(s2)
-random.shuffle(s3)
-random.shuffle(s4)
-part1 = round(characters_num * (30/100))
-part2 = round(characters_num * (20/100))
-password = []
-for i in range(part1):
-    password.append(s1[i])
-    password.append(s2[i])
-for g in range(part2):
-    password.append(s3[g])
-    password.append(s4[g])
-print( "".join(password[0:]))
+from modules import stats
+
+lower = list(string.ascii_lowercase)
+upper = list(string.ascii_uppercase)
+digits = list(string.digits)
+punc = list(string.punctuation)
+mix = lower+upper+digits+punc
+#characters_num = input("how many characters for the password :")
+def gen(min_len=8,
+	max_len=12,
+	lower_percent=10,
+	upper_percent=20,
+	digits_percent=50,
+	punc_percent=30,
+	randomize=False):
+ password=str()
+ length=random.choice(range(min_len,max_len))
+ if(randomize==True):
+  password=str().join(random.sample(mix,length)) # Generating completly random password
+ else:
+  lp=round((lower_percent/100)*length) # Lower actual percent
+  up=round((upper_percent/100)*length) # Upper actual percent
+  dp=round((digits_percent/100)*length) # Digits actual percent
+  pp=round((punc_percent/100)*length) # Punctuation actual percent
+  password += str().join(random.sample(lower,lp))
+  password += str().join(random.sample(upper,up))
+  password += str().join(random.sample(digits,dp))
+  password += str().join(random.sample(punc,pp))
+  stat=stats.PasswordStats(password)
+  strength=stat.strength()*100
+ return password,round(strength)
+if __name__=='__main__':
+ print(gen(6))
